@@ -11,6 +11,7 @@ app.use(cors())
 dotenv.config();
 
 const port = process.env.PORT
+const secretKey = process.env.SECRET_KEY
 
 //Schema
 const Schema = mongoose.Schema;
@@ -49,12 +50,12 @@ app.get('/:id', async (req, res) => {
 //Create User
 app.post('/', async (req, res) => {
     try {
-        const hashedPass = await bcrypt.hash(req.body.password,10)
+        const hashedPass = await bcrypt.hash(req.body.password, 10)
         console.log(hashedPass);
         const user = new Users({
             username: req.body.username,
             password: hashedPass,
-            role:req.body.role
+            role: req.body.role
         })
         await user.save()
         res.send('User Created!')
@@ -79,21 +80,21 @@ app.delete('/:id', async (req, res) => {
     }
 })
 
-app.post('/login',async(req,res)=>{
-    const {username, password} = req.body
-    const user = await Users.findOne({username})
-    
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body
+    const user = await Users.findOne({ username })
+
     if (user) {
-        const isPassValid = await bcrypt.compare(password,user.password)
-        console.log(isPassValid);
+        const isPassValid = await bcrypt.compare(password, user.password)
         if (isPassValid) {
-            return res.status(200).send("Login Succesfully!")
+            const token = jwt.sign({ userId: user._id, role:user.role }, secretKey, { expiresIn: '1h' });
+            return res.status(200).send(token)
         }
-        else{
-        res.send("Login Failed! Username or Password Incorrect!")
+        else {
+            res.send("Login Failed! Username or Password Incorrect!")
         }
     }
-    else{
+    else {
         res.send("Login Failed! Username or Password Incorrect!")
     }
 })
