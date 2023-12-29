@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { token, setToken } = useContext(AuthContext);
@@ -9,17 +10,20 @@ const Login = () => {
     username: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   const handleLogin = async () => {
     const resp = await axios.post("http://localhost:5123/login", {
       username: userForm.username,
       password: userForm.password,
     });
+    
     setToken(resp.data)
+    !resp.data.message ? navigate("/news") : console.log('err');
     setUserForm({
       username: "",
       password: "",
     });
+    
   };
   return (
     <>

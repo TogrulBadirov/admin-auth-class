@@ -2,7 +2,9 @@ import React from 'react'
 
 const Home = () => {
   return (
-    <div>Home</div>
+    <div>Xoş gəlmisiniz! 
+      <br />
+      Xəbərləri görmək üçün qeydiyyatdan keçin!!</div>
   )
 }
 

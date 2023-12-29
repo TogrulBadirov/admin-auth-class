@@ -1,35 +1,27 @@
-// import React, { createContext, useState } from 'react'
+import React, { createContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
-// export const AuthContext = createContext()
+export const AuthContext = createContext();
 
-// const AuthProvider = () => {
-//     const [first, setfirst] = useState(second)
-//   return (
-//     <div>authContext</div>
-//   )
-// }
+function AuthProvider({ children }) {
+  const [token, setToken] = useState(
+    localStorage.getItem("token")
+      ? JSON.parse(localStorage.getItem("token"))
+      : null
+  );
+  const [decodedUser, setDecodedUser] = useState("");
+  useEffect(() => {
+    localStorage.setItem("token", JSON.stringify(token));
+    token? setDecodedUser(jwtDecode(token)) : ''
+  }, [token]);
 
-// export default AuthProvider
-
-import React, { createContext, useEffect, useState } from 'react'
-
-export const AuthContext = createContext()
-
-function AuthProvider ({children}) {
-    const [token, setToken] = useState(localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')):null)
-    useEffect(() => {
-      localStorage.setItem('token',JSON.stringify(token))
-    }, [token])
-    
-    const data ={
-        token,
-        setToken
-    }
-  return (
-    <AuthContext.Provider value={data}>
-        {children}
-    </AuthContext.Provider>
-  )
+  const data = {
+    token,
+    setToken,
+    decodedUser,
+    setDecodedUser,
+  };
+  return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
 }
 
-export default AuthProvider
+export default AuthProvider;
